@@ -122,7 +122,7 @@ def count_heterozygous(df):
     df : DataFrame.
 
     """
-
+    heterozygous_genotypes = []
     for index, row in df.iterrows():
         h_count = 0
         population = set()
@@ -130,11 +130,12 @@ def count_heterozygous(df):
             if '/' in str(value):
                 population.add(value)
                 h_count = h_count + 1
+        heterozygous_genotypes.append(list(population))
 
         df.at[index, "heterozygous_count"] = h_count
         df.at[index, "heterozygous_unique"] = len(population)
 
-    return df
+    return df, heterozygous_genotypes
 
 
 def population_identification (train, test, n_clusters):

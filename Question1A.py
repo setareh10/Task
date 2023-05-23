@@ -4,34 +4,55 @@ Created on Tue May 23 09:02:47 2023
 
 @author: setareh
 """
-import pandas as pd
 from sklearn.cluster import KMeans
+from datasets import dataset_A_new
 from matplotlib import pyplot as plt
 from sklearn.decomposition import PCA
+from functions import data_preprocessing
 from yellowbrick.cluster import KElbowVisualizer
 from scipy.cluster.hierarchy import dendrogram, linkage
-from datasets import dataset_A_new
-from functions import scale_data, data_preprocessing
 
 
-    
-def populations_identification_hierarchical(df, n_components):
-    
+pca, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components=25)
 
-    pca, a_scaled = data_preprocessing(df, PCA, n_components)
+def populations_identification_hierarchical(df):
+    """
+    Performs hierarchical clstering to identify different popolations/clusters.
+
+    Parameters
+    ----------
+    df : DataFrame.
+
+    Returns
+    -------
+    A figure, representing the hierarchical clstering results.
+
+    """
     
-    Z = linkage(a_scaled, method='ward')
+    Z = linkage(df, method='ward')
     fig = plt.figure(figsize=(25, 10))
     plt.title('Hierarchical clustering of Sudorphidius parasites', fontsize=18)
     dn = dendrogram(Z)
     return 
     
 
-def populations_identification_kmeans(df, n_components):
- 
-    pca, a_scaled = data_preprocessing(df, PCA, n_components)
+def populations_identification_kmeans(df):
+    """
+    Performs k-means clstering to identify the number of different 
+    popolations/clusters determined by elbow method.
 
-    x0 = a_scaled.copy()
+
+    Parameters
+    ----------
+    df : DataFrame.
+
+    Returns
+    -------
+    n_clusters: int.
+
+    """
+ 
+    x0 = df.copy()
     model = KMeans()
     visualizer = KElbowVisualizer(model, k=(1, 20))
     visualizer.fit(x0)
@@ -41,9 +62,9 @@ def populations_identification_kmeans(df, n_components):
 
 
 
-populations_identification_hierarchical(dataset_A_new, n_components=25)
+populations_identification_hierarchical(a_scaled)
 
-n_clusters = populations_identification_kmeans(dataset_A_new, n_components=25)
+n_clusters = populations_identification_kmeans(a_scaled)
 
 
 if n_clusters > 1:
