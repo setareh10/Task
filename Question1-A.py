@@ -2,7 +2,7 @@
 """
 Created on Tue May 23 09:02:47 2023
 
-@author: setar
+@author: setareh
 """
 import pandas as pd
 from sklearn.cluster import KMeans
@@ -11,29 +11,42 @@ from sklearn.decomposition import PCA
 from yellowbrick.cluster import KElbowVisualizer
 from scipy.cluster.hierarchy import dendrogram, linkage
 from datasets import dataset_A_new
-from functions import scale_data
+from functions import scale_data, data_preprocessing
 
 
-a_dummies = pd.get_dummies(dataset_A_new)
-pca = PCA(25)
-a_prime = pca.fit_transform(a_dummies)
-print(f'Total explained variance: {(pca.explained_variance_ratio_).sum()}')
+    
+def populations_identification_hierarchical(dataset_A_new, n_components):
+    
 
-a_scaled = scale_data(a_prime)
+    pca, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components)
+    
+    Z = linkage(a_scaled, method='ward')
+    fig = plt.figure(figsize=(25, 10))
+    plt.title('Hierarchical clustering of Sudorphidius parasites', fontsize=18)
+    dn = dendrogram(Z)
+    return 
+    
 
-Z = linkage(a_scaled, method='ward')
-fig = plt.figure(figsize=(25, 10))
-plt.title('Hierarchical clustering of Sudorphidius parasites', fontsize=18)
-dn = dendrogram(Z)
+def populations_identification_kmeans(dataset_A_new, n_components):
+ 
+    pca, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components)
+
+    x0 = a_scaled.copy()
+    model = KMeans()
+    visualizer = KElbowVisualizer(model, k=(1, 20))
+    visualizer.fit(x0)
+    n_clusters = visualizer.elbow_value_
+    
+    return int(n_clusters)
 
 
-x0 = a_scaled.copy()
-model = KMeans()
-visualizer = KElbowVisualizer(model, k=(1, 20))
-visualizer.fit(x0)
-n_clusters = visualizer.elbow_value_
+
+populations_identification_hierarchical(dataset_A_new, n_components=25)
+
+n_clusters = populations_identification_kmeans(dataset_A_new, n_components=25)
+
 
 if n_clusters > 1:
-    print("Different populations have been identified!")
+    print(f"Different populations (~{n_clusters}) have been identified!")
 else:
     print("One single population has been identified!")
