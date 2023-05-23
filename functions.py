@@ -2,10 +2,11 @@
 """
 Created on Tue May 23 09:08:29 2023
 
-@author: setar
+@author: setareh
 """
 
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 
@@ -24,7 +25,18 @@ def replace_missing_values(df):
     return df_new
 
 
-def mixed_infection_classifier(df, col, sparsity_degree):
+def data_preprocessing(df, PCA, n_components):
+    df_dummies = pd.get_dummies(df)
+    pca = PCA(n_components)
+    df_reduced = pca.fit_transform(df_dummies)
+    # print(f'Total explained variance: {(pca.explained_variance_ratio_).sum()}')
+    df_scaled = scale_data(df_reduced)
+    
+    return (pca, df_scaled)
+
+
+
+def label_mixed_clonal(df, col, sparsity_degree):
     for index, row in df.iterrows():
         if df.at[index, col] > sparsity_degree:
             df.at[index, "mixed_infection"] = "Mixed"
