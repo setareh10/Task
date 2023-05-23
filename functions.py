@@ -27,7 +27,10 @@ def replace_missing_values(df):
 
 def data_preprocessing(df, PCA, n_components):
     df_dummies = pd.get_dummies(df)
-    pca = PCA(n_components)
+    if n_components is None:
+        pca = PCA
+    else:
+        pca = PCA(n_components)
     df_reduced = pca.fit_transform(df_dummies)
     # print(f'Total explained variance: {(pca.explained_variance_ratio_).sum()}')
     df_scaled = scale_data(df_reduced)
