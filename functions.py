@@ -7,6 +7,7 @@ Created on Tue May 23 09:08:29 2023
 
 import numpy as np
 import pandas as pd
+from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
 
@@ -61,3 +62,12 @@ def count_heterozygous(df):
         df.at[index, "heterozygous_unique"] = len(population)
 
     return df
+
+
+def population_identification (train, test, n_clusters):
+
+    model = KMeans(n_clusters=n_clusters)
+    model.fit(train)
+    
+    categories = model.predict(test)
+    return categories
