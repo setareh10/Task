@@ -13,11 +13,9 @@ from yellowbrick.cluster import KElbowVisualizer
 from scipy.cluster.hierarchy import dendrogram, linkage
 
 
-pca, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components=25)
-
 def populations_identification_hierarchical(df):
     """
-    Performs hierarchical clstering to identify different popolations/clusters.
+    Perform hierarchical clstering to identify different popolations/clusters.
 
     Parameters
     ----------
@@ -25,20 +23,20 @@ def populations_identification_hierarchical(df):
 
     Returns
     -------
-    A figure, representing the hierarchical clstering results.
-
+    None.
     """
     
     Z = linkage(df, method='ward')
     fig = plt.figure(figsize=(25, 10))
     plt.title('Hierarchical clustering of Sudorphidius parasites', fontsize=18)
     dn = dendrogram(Z)
-    return 
+    
+    return None
     
 
 def populations_identification_kmeans(df):
     """
-    Performs k-means clstering to identify the number of different 
+    Perform k-means clstering to identify the number of different 
     popolations/clusters determined by elbow method.
 
 
@@ -61,13 +59,17 @@ def populations_identification_kmeans(df):
     return int(n_clusters)
 
 
-
-populations_identification_hierarchical(a_scaled)
-
-n_clusters = populations_identification_kmeans(a_scaled)
-
-
-if n_clusters > 1:
-    print(f"Different populations (~{n_clusters}) have been identified!")
-else:
-    print("One single population has been identified!")
+if __name__ == "__main__":
+    
+    ## Prepare the data
+    pca, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components=25)
+    
+    populations_identification_hierarchical(a_scaled)
+    
+    n_clusters = populations_identification_kmeans(a_scaled)
+    
+    
+    if n_clusters > 1:
+        print(f"Different populations (~{n_clusters}) have been identified!")
+    else:
+        print("One single population has been identified!")

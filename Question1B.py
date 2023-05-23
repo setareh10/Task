@@ -35,37 +35,42 @@ def classifier(df, sparsity_degree):
         df, "heterozygous_unique", sparsity_degree)
 
     infection_nb = df_classified["mixed_infection"].value_counts()
-    clonal_count = infection_nb[0]
-    mixed_count = infection_nb[1]
+    clonal_count, mixed_count = infection_nb[:2]
 
     return df_classified, clonal_count, mixed_count
 
 
-## Create a new dataframe with new columns, counting heterozygous genotypes
-df_A, heterozygous_genotypes = count_heterozygous(dataset_A_new)
 
-## Perfomr simple classification/labelling
-dataset_A_classified, clonal_count, mixed_count = classifier(
-    df_A, sparsity_degree=3)
-
-
-if clonal_count > mixed_count:
-    print(
-        f'Infections are primarily clonal, with {clonal_count} samples out of {clonal_count+mixed_count}!')
-else:
-    print(
-        'Infections are primarily mixed, with {mixed_count} samples out of {clonal_count+mixed_count}!')
-
-
-## To find out if diffenet populations have different prevalence of mixed infections
-
-pca_a, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components=25)
-
-n_clusters = populations_identification_kmeans(a_scaled)
-
-categories = population_identification(a_scaled, a_scaled, n_clusters)
-
-population_df = pd.DataFrame(list(zip(heterozygous_genotypes, list(categories))),
-               columns =['heterozygous genotypes', 'populations'])
-
-population_df = population_df.sort_values('populations')
+if __name__ == "__main__":
+    
+    ## Part1
+    ## Create a new dataframe with new columns, counting heterozygous genotypes
+    df_A, heterozygous_genotypes = count_heterozygous(dataset_A_new)
+    
+    ## Perfomr simple classification/labelling
+    dataset_A_classified, clonal_count, mixed_count = classifier(
+        df_A, sparsity_degree=3)
+    
+    
+    if clonal_count > mixed_count:
+        print(
+            f'Infections are primarily clonal, with {clonal_count} samples out of {clonal_count+mixed_count}!')
+    else:
+        print(
+            'Infections are primarily mixed, with {mixed_count} samples out of {clonal_count+mixed_count}!')
+    
+    
+    # Part2
+    ## To find out if diffenet populations have different prevalence of mixed infections
+    
+    pca_a, a_scaled = data_preprocessing(dataset_A_new, PCA, n_components=25)
+    
+    n_clusters = populations_identification_kmeans(a_scaled)
+    
+    categories = population_identification(a_scaled, a_scaled, n_clusters)
+    
+    ## Create a new dataframe consisting of only two columns
+    population_df = pd.DataFrame(list(zip(heterozygous_genotypes, list(categories))),
+                   columns =['heterozygous genotypes', 'populations'])
+    
+    population_df = population_df.sort_values('populations')

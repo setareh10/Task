@@ -11,28 +11,33 @@ from Question1A import populations_identification_hierarchical, populations_iden
 from Question1B import classifier
 
 
-pca_e, e_scaled = data_preprocessing(dataset_E_new, PCA, n_components=25)
-
-
-populations_identification_hierarchical(e_scaled)
-n_clusters = populations_identification_kmeans(e_scaled)
-
-
-if n_clusters > 1:
-    print(f"Different populations (~{n_clusters}) have been identified!")
-else:
-    print("One single population has been identified!")
-
-
-
-dataset_E_classified, clonal_count, mixed_count = classifier(
-    dataset_E_new, sparsity_degree=3)
-
-if clonal_count > mixed_count:
-    print(
-        f'Infections are primarily clonal, with {clonal_count} samples out of {clonal_count+mixed_count}!')
-else:
-    print(
-        'Infections are primarily mixed, with {mixed_count} samples out of {clonal_count+mixed_count}!')
-
-
+if __name__ == "__main__":
+    
+    ## Prepare the dataset
+    pca_e, e_scaled = data_preprocessing(dataset_E_new, PCA, n_components=25)
+    
+    ## Perform hierarchical clustering (output: one figure)
+    populations_identification_hierarchical(e_scaled)
+    
+    ## Perform k-means clustering to determine the optimum number of clusters
+    n_clusters = populations_identification_kmeans(e_scaled)
+    
+    
+    if n_clusters > 1:
+        print(f"Different populations (~{n_clusters}) have been identified!")
+    else:
+        print("One single population has been identified!")
+    
+    
+    ## Perform classification
+    dataset_E_classified, clonal_count, mixed_count = classifier(
+        dataset_E_new, sparsity_degree=3)
+    
+    if clonal_count > mixed_count:
+        print(
+            f'Infections are primarily clonal, with {clonal_count} samples out of {clonal_count+mixed_count}!')
+    else:
+        print(
+            'Infections are primarily mixed, with {mixed_count} samples out of {clonal_count+mixed_count}!')
+    
+    

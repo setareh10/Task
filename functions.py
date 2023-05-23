@@ -32,7 +32,7 @@ def scale_data(df):
 
 def replace_missing_values(df):
     """
-    Replace missing values of each row "-" with 
+    Replace missing values of each row, "-", with 
     the most frequent DNA marker of the row.
 
     Parameters
@@ -51,20 +51,20 @@ def replace_missing_values(df):
     return df_new
 
 
-def data_preprocessing(df, PCA, n_components):
+def data_preprocessing(df, pca_obj, n_components):
     """
-    Converts the categorical data into numerical,
+    Convert the categorical data into numerical,
     reduce the dimensions of the data using PCA,
     and standardise the data. 
 
     Parameters
     ----------
     df : DataFrame.
-    PCA : PCA object.
+    pca_obj : PCA object.
     n_components : int, or float. 
-    Number of components to keep.  If 0 < n_components < 1 , select the number 
-    of components such that the amount of variance that needs to be explained
-    is greater than the percentage specified by n_components 
+        Number of components to keep.  If 0 < n_components < 1 , select the 
+        number of components such that the amount of variance that needs to 
+        be explained is greater than the percentage specified by n_components. 
 
     Returns
     -------
@@ -73,12 +73,13 @@ def data_preprocessing(df, PCA, n_components):
 
     """
     df_dummies = pd.get_dummies(df)
+    
     if n_components is None:
-        pca = PCA
+        pca = pca_obj
     else:
-        pca = PCA(n_components)
+        pca = pca_obj(n_components)
+        
     df_reduced = pca.fit_transform(df_dummies)
-    # print(f'Total explained variance: {(pca.explained_variance_ratio_).sum()}')
     df_scaled = scale_data(df_reduced)
     
     return (pca, df_scaled)
@@ -123,6 +124,7 @@ def count_heterozygous(df):
 
     """
     heterozygous_genotypes = []
+    
     for index, row in df.iterrows():
         h_count = 0
         population = set()
@@ -130,6 +132,7 @@ def count_heterozygous(df):
             if '/' in str(value):
                 population.add(value)
                 h_count = h_count + 1
+                
         heterozygous_genotypes.append(list(population))
 
         df.at[index, "heterozygous_count"] = h_count
@@ -140,7 +143,7 @@ def count_heterozygous(df):
 
 def population_identification (train, test, n_clusters):
     """
-    Determines which population/cluster each unseen sample (test) belongs to.
+    Determine which population/cluster each unseen sample (test) belongs to.
 
     Parameters
     ----------
@@ -158,4 +161,5 @@ def population_identification (train, test, n_clusters):
     model.fit(train)
     
     categories = model.predict(test)
+    
     return categories
